@@ -295,6 +295,42 @@ public: // PUBLIC to everyone, can be accesed from everywhere. PROTECTED is used
 	operator double() {
 		return this->age; // Using default (implicit) could lose some information, not too safe to use it will automatically cast.
 	} //EX: Employee x(...); int y = 24; x = y; 
+
+	// 5. FILES 
+	friend ofstream& operator<<(ofstream& fout, const Employee& a) {
+		// same as ostream //
+		fout << "Name: " << a.name << endl;
+		fout << "Age: " << a.age << endl;
+		fout << "Number of DISCOUNTS: " << a.nrDiscounts << endl;
+		fout << "Discounts: ";
+		if (a.nrDiscounts > 0 && a.discounts != nullptr) {
+			for (int i = 0; i < a.nrDiscounts; i++) {
+				fout << a.discounts[i] << " ";
+			}
+		}
+		fout << endl;
+		return fout; // DON'T FORGET TO RETURN 'fout'!
+	}
+	friend ifstream& operator>>(ifstream& fin, Employee& a) {
+		// same as istream but with some minor modifications //
+		// NOTE: for char* you have to create a buffer with a certain size!!
+		// NOTE: You have to use 'ws' and getline() !! * google it for more!
+		// IF YOU ARE USING STRINGS you don't have to use these.
+		cout << "Type your name: " << endl;
+		fin >> a.name;
+		cout << "\n" << "Type your age: " << endl;
+		fin >> a.age;
+		cout << "\n" << "Type your number of DISCOUNTS: " << endl;
+		fin >> a.nrDiscounts;
+		cout << "\n" << "Type discount value: " << endl;
+		if (a.nrDiscounts > 0) {
+			a.discounts = new float[a.nrDiscounts];
+			for (int i = 0; i < a.nrDiscounts; i++) {
+				fin >> a.discounts[i];
+			}
+		}
+		return fin; // DON'T FORGET TO RETURN 'in'!
+	}
 };
 
 double Employee::salary = 2904.42; // STATIC ASSIGNMENT FROM EMPLOYEE (1)
@@ -382,6 +418,19 @@ int main() {
 	int y = 242;
 	p3 = (float)y; // explicit
 	p3 = y; // implicit
+
+	// 5. FILES
+
+	// output to file in TEXT FORMAT
+	// let's say we already have p3
+	ofstream fileOut("file_output_name.txt", ios::out);
+	fileOut << p3;
+
+	// input from file in TEXT FORMAT
+	Employee p6(10);
+	ifstream fileIn("file_name.txt", ios::in);
+	fileIn >> p6;
+	cout << p6;
 
 	return 0; 
 }
