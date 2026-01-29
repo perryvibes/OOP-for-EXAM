@@ -12,7 +12,7 @@ using namespace std;
 ...
 3. Friend Attribute X
 ...
-4. Operators Overloading (+=,++,!,[],>=,<= etc.)
+4. Operators Overloading (+=,++,!,[],>=,<= etc.) X
 ...
 5. Files
 ...
@@ -45,7 +45,7 @@ private: // only accesed in the class or using 'friend' functions
 	
 	// STATIC variable will be mentioned only in the class, it will be assigned with a GENERAL value associated to CLASS Employee outside the class.
 	// You can give/modify values to it without creating an Employee Object.
-	static float salary;
+	static double salary;
 
 	// other attributes
 	// NOTE - initiate and assign with values here and Default Constructor will be only Employee(){}
@@ -69,7 +69,7 @@ public: // PUBLIC to everyone, can be accesed from everywhere. PROTECTED is used
 		this->name = "n/a";
 		this->age = 0;
 		this->nrDiscounts = 0;
-		this->discounts == nullptr;
+		this->discounts = nullptr;
 	}
 
 	// With all parameters (There are few ways to create it)
@@ -166,13 +166,138 @@ public: // PUBLIC to everyone, can be accesed from everywhere. PROTECTED is used
 
 	// 3. Friend Attribute (gives access to a class or a function to everything in the class)
 
-	friend int RandomCalculation(Employee& a) {}; // WE CAN ACCESS PRIVATE ATTRIBUTES OUTSIDE THE CLASS!! Not recommended! CHECK -> (3)
+	friend int RandomCalculation(Employee& a); // WE CAN ACCESS PRIVATE ATTRIBUTES OUTSIDE THE CLASS!! Not recommended! CHECK -> (3)
 
 	// used with ostream and istream operators for inputs and outputs
 
+	// 4. OPERATORS OVERLOADING
+	
+	// STREAMING OPERATORS
+	friend ostream& operator<<(ostream& out, const Employee& a) {
+		out << "Name: " << a.name << endl;
+		out << "Age: " << a.age << endl;
+		out << "Number of DISCOUNTS: " << a.nrDiscounts << endl;
+		out << "Discounts: ";
+		if (a.nrDiscounts > 0 && a.discounts != nullptr) {
+			for (int i = 0; i < a.nrDiscounts; i++) {
+				out << a.discounts[i] << " ";
+			}
+		}
+		out << endl;
+		return out; // DON'T FORGET TO RETURN 'out'!
+	}
+	friend istream& operator>>(istream& in, Employee& a) { // NO CONST for istream!!
+		cout << "Type your name: " << endl;
+		in >> a.name;
+		cout << "\n" << "Type your age: " << endl;
+		in >> a.age;
+		cout << "\n" << "Type your number of DISCOUNTS: " << endl;
+		in >> a.nrDiscounts;
+		cout << "\n" << "Type discount value: " << endl;
+		if (a.nrDiscounts > 0) {
+			a.discounts = new float[a.nrDiscounts];
+			for (int i = 0; i < a.nrDiscounts; i++) {
+				in >> a.discounts[i];
+			}
+		}
+		return in; // DON'T FORGET TO RETURN 'in'!
+	}
+
+	// UNARY OPERATORS 
+
+	Employee& operator+=(int _value) { // for static allocated memory
+		this->age += _value;
+		return *this;
+	}
+
+	Employee& operator+=(float _value) { // adding a new element to dinamically allocated memory 'DISCOUNTS'
+		float* newDiscounts = new float[this->nrDiscounts + 1];
+		for (int i = 0; i < this->nrDiscounts; i++) {
+			newDiscounts[i] = this->discounts[i];
+		}
+		newDiscounts[this->nrDiscounts] = _value; // here we are adding the new value on last position!
+		this->nrDiscounts++; // incrementing the number of discount too
+		if (this->discounts != nullptr) {
+			delete[] this->discounts;  // deleteing the data from discounts pointer
+		}
+		this->discounts = newDiscounts; // giving new data from NEW DISCOUNTS to DISCOUNTS back by passing the POINTER!
+		return *this;
+	}
+	// same for '-='
+
+	bool operator!() {
+		if (this->age == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	bool operator==(const Employee& a) const { // let's try with an object (EX: Employee A1,A2(3); A1 == A2 ??)
+		bool result = true;
+		if (this->age != a.age) result = false;
+		if (this->name != a.name) result = false;
+		if (this->nrDiscounts != a.nrDiscounts) {
+			result = false;
+		}
+		else {
+			for (int i = 0; i < this->nrDiscounts; i++) {
+				if (this->discounts[i] != a.discounts[i]) result = false;
+			}
+		}
+		return result;
+	};
+
+	float operator[](int _index) {
+		return this->discounts[_index];
+	}
+
+	Employee& operator++() {   // OPERATOR++ PRE-INCREMENTED!! - it will change the value and return the value changed (ex: age = 1 ... operator++(pre) ... will return age = 2)
+		this->age++;
+		return *this;
+	}
+	Employee operator++(int) { // OPERATOR++ POST-INCREMENTED!! - it will change the value and it will return the value BEFORE incrementation!!
+		Employee copy = *this; // (ex: age = 1 ... operator++(post) ... will return age = 1, BUT FOR NEXT OPERATIONS AGE IS 2!!)
+		this->age++;
+		return copy; // we will return a COPY of the object with value before the incrementation
+	}
+	// same for '--'
+
+	Employee& operator+(const Employee& a) {   // this is for A1 = A2 + A3; 
+		int value = this->age + a.age;		// IMAGINE LIKE: 'A1 =' is (operator=), 'A2 + A3' is (A2.operator+(A3) OR Employee&(A2) operator+(const Employee& a)(A3))
+		this->age = value;
+		return *this;
+	}
+	// Note that here we modify A2 !! (because we passed '&' and we don't return a copy but the object itself!)
+	// or you can use Employee without & BEFORE operator+ and return a copy of the object with 'return this'
+
+	Employee& operator+(int _value) {   
+		int result = this->age + _value;  // THAT'S A1 = A2 + 10(value)
+		this->age = result;
+		return *this;
+	}
+
+	friend Employee operator+(int _value, Employee a) {  // this is A1 = VALUE(1,4,25,12 etc.) + A2;
+		return a.age + _value;
+	}
+	// why friend? Because you give a foreign value (int _value) and the compiler has to know that the value isn't one of the object either way you get and ERROR!
+	// same for '-'
+
+	bool operator<=(const Employee& a) {
+		return this->age <= a.age;
+	}
+	bool operator>=(const Employee& a) {
+		return this->age >= a.age;
+	}
+	
+	explicit operator float() {  // Using 'explicit' is safer, you have to call it manually;
+		return this->age; // EX: Employee x(...); int y = 213; x = (float) y;
+	}
+	operator double() {
+		return this->age; // Using default (implicit) could lose some information, not too safe to use it will automatically cast.
+	} //EX: Employee x(...); int y = 24; x = y; 
 };
 
-float Employee::salary = 2904.42; // STATIC ASSIGNMENT FROM EMPLOYEE (1)
+double Employee::salary = 2904.42; // STATIC ASSIGNMENT FROM EMPLOYEE (1)
 
 int RandomCalculation (Employee& a) { // PROOF (3)
 	int number = a.age + a.nrDiscounts; // We accessed private attributes and used them.
@@ -183,9 +308,7 @@ int RandomCalculation (Employee& a) { // PROOF (3)
 // 8. ABSTRACT CLASS
 
 // A class only with pure virtual methods is called Abstract Class.
-
 // Virtually Pure Method is a virtual method assigned with 0 (ex: virtual int SumOfTwo() = 0)
-
 // Virtual Method != Pure Virtual Method!!
 
 class Abstract {
@@ -219,6 +342,46 @@ int main() {
 	RandomCalculation(p3); // accessing everything in p3 through the function.
 
 	// 4. OPERATORS OVERLOADING
+
+	// istream + ostream
+	cout << p2 << endl;
+	cin >> p2;
+	cout << endl;
+	cout << p2;
+
+	// += for static and dinamic
+	cout << p3 << endl;
+	p3 += 2;
+	cout << p3 << endl;
+	cout << p2 << endl;
+	p2 += float(492.2); // adding one more discount
+	cout << p2;
+	
+	// ==, !, [], <=, >=
+	p2 == p3 ? cout << "Equal" : cout << "Not equal"; // same as if(p1==p3) {cout << "Equal";} else {cout << "Not equal";} [CONDITIONAL OPERATOR]
+	
+	!p2 ? cout << "Not a valid age!" : cout << "Valid age!";
+	
+	cout << p3[1] << endl;
+	
+	p2 >= p3 ? cout << "p2 is greater/equal p3" : cout << "NOT!";
+	p2 <= p3 ? cout << "p2 is less/equal p3" : cout << "NOT";
+
+	// ++
+	p2++;
+	cout << p2 << endl;
+	
+	// +
+	
+	p3 = p5 + p2;
+	p2 = 10 + p3;
+	p2 = p3 + 10;
+
+	// casting int -> float
+
+	int y = 242;
+	p3 = (float)y; // explicit
+	p3 = y; // implicit
 
 	return 0; 
 }
