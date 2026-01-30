@@ -1,0 +1,4 @@
+Name: n/a
+Age: 57
+Number of DISCOUNTS: 3
+Discounts: 

@@ -12,13 +12,13 @@ using namespace std;
 ...
 3. Friend Attribute X
 ...
-4. Operators Overloading (+=,++,!,[],>=,<= etc.) X
+4. Operators Overloading + Casting (+=,++,!,[],>=,<= etc.) X
 ...
-5. Files
+5. Files ?
 ...
-6. Inheritance and Inclusion (IS A and HAS A relationships)
+6. Inheritance and Inclusion (IS A and HAS A relationships) X
 ...
-7. Virtual Functions
+7. Virtual Functions ?
 ...
 8. Abstract Classes X
 ...
@@ -37,7 +37,8 @@ class Employee {
 
 	// YOU CAN DECLARE PUBLIC, PRIVATE (DEFAULT) and PROTECTED(for IS A relationship)
 	
-private: // only accesed in the class or using 'friend' functions
+protected: // private: only accesed in the class or using 'friend' functions
+		// protected: for Inheritance
 
 	// CONST variable that can be assigned once
 	// - you can crate another function as an IDs generator that increments id everytime an Employee object is created
@@ -82,7 +83,7 @@ public: // PUBLIC to everyone, can be accesed from everywhere. PROTECTED is used
 	Because id is a CONST variable and when you are doing : id(_id) it gets the value right when the OBJECT is created.
 	Instead when doing this->id = _id , the id is already initiated with '0' from class attributes and the program tries to assign the _id value to the const variable and THIS IS NOT POSSIBLE!	
 	*/
-	Employee(int _id, string _name, int _nrDiscounts, float* _discounts):id(_id),name(_name),nrDiscounts(_nrDiscounts) { // attributes are already assigned with _... values
+	Employee(int _id, string _name, int _age, int _nrDiscounts, float* _discounts):id(_id),name(_name),age(_age),nrDiscounts(_nrDiscounts) { // attributes are already assigned with _... values
 
 		if (this->nrDiscounts > 0) { // checking if we have a vector pozitive size
 			// allocating memory NEW 'type'[SIZE OF ALLOCATED MEMORY]
@@ -333,6 +334,82 @@ public: // PUBLIC to everyone, can be accesed from everywhere. PROTECTED is used
 	}
 };
 
+// 6.1 Inheritance relationship (IS A relationship)
+
+class Manager : public Employee { // Manager is an Employee too
+	const int id_manager = 0;
+public:
+	Manager():Employee(){}
+	Manager(int _id):Employee(),id_manager(_id){}
+	Manager(int _idM, int _idE, string _name, int _age, int _nrDiscounts, float* _discounts):id_manager(_idM), Employee(_idE, _name, _age, _nrDiscounts, _discounts) {
+	}
+	~Manager() {
+		// we only have the allocated memory from Employee
+		// in case we allocate memory in Manger we will deallocate here too
+		Employee::~Employee();
+	}
+	//copy constructor
+	Manager(const Manager& m):Employee(m),id_manager(m.id_manager) {
+	}
+	//operator=
+	Manager& operator=(const Manager& m) {
+		if (this != &m) {
+			this->Employee::operator=(m);
+			// we are using operator= from employee
+		}
+		return *this;
+	}
+	//for input
+	friend istream& operator>>(istream& in, Manager& m) {
+		in >> (Employee&)m; //upcasting
+		return in;
+	}
+
+	//for output
+	friend ostream& operator<<(ostream& out, const Manager& m) {
+		out << "Manager ID: " << m.id_manager << endl;
+		out << (Employee)m << endl;
+		return out;
+	}
+};
+
+// 6.2 Inclusion relationship (HAS A relationship)
+class Boss {
+private:
+	Employee* employees = nullptr; // a pointer to a buch of employees 
+	int numberOfEmployees = 0;
+public:
+	Boss(){}
+	Boss(int _number, Employee* _employees):numberOfEmployees(_number) { 
+		if (this->numberOfEmployees > 0) {
+			this->employees = new Employee[this->numberOfEmployees];
+			for (int i = 0; i < this->numberOfEmployees; i++) {
+				this->employees[i] = _employees[i];
+			}
+		}
+	}
+	// ... like the other classes
+	// Usually they will ask to play with Boss and Employees
+	// (ex: add 2 more employees, remove an employee, show the employee from position 'i')
+	// All you have to do is to play with getters and setters from Employee to receive info and modify it from Boss;
+
+	friend ostream& operator<<(ostream& out, const Boss& b) {
+		out << "Boss Employees: " << endl;
+		for (int i = 0; i < b.numberOfEmployees; i++) {
+			out << b.employees[i];
+		}
+		out << endl;
+		return out;
+	}
+	~Boss() {
+		if (this->employees != nullptr) {
+			delete[] this->employees;
+			this->employees = nullptr;
+		}
+	}
+};
+
+
 double Employee::salary = 2904.42; // STATIC ASSIGNMENT FROM EMPLOYEE (1)
 
 int RandomCalculation (Employee& a) { // PROOF (3)
@@ -340,16 +417,24 @@ int RandomCalculation (Employee& a) { // PROOF (3)
 	return number;
 }
 
+// 7. Virtual Functions
+
+// All you have to know:
+// 1. Use pure virtual methods from Abstract class as soon as you put Abstract class in 'IS A' relationship with the class you want to use.
+// ex: class Manager : public/protected Employee, public/protected Abstract
+// 2. Use it in the base class (Employee) like virtual void function(){...}
+// 3. After using in base class, you can use it in other derived classes like virtual void function() override {...} *google why override
+// 4. Use virtual void function() final {...} when is the last time you use it 
 
 // 8. ABSTRACT CLASS
 
 // A class only with pure virtual methods is called Abstract Class.
-// Virtually Pure Method is a virtual method assigned with 0 (ex: virtual int SumOfTwo() = 0)
-// Virtual Method != Pure Virtual Method!!
+// Pure Virtual Method is a virtual method assigned with 0 (ex: virtual int SumOfTwo() = 0)
+// Virtual Method != Pure Virtual Method !!
 
 class Abstract {
-public:
-	virtual void Testing() = 0;
+protected:
+	virtual void TestingVirtualFunction() = 0;
 	virtual int Calculator() = 0;
 };
 
@@ -360,7 +445,7 @@ int main() {
 
 	int numberOfDiscounts = 3;
 	float discounts[]{ 25,12.5,45.1 };
-	Employee p1(), p2(1), p3(2, "Jhon", 3, discounts);
+	Employee p1(), p2(1), p3(2,"Jhon",45, 3, discounts);
 	//copy constructor
 	Employee p4 = p3;
 	Employee p5(p3);
@@ -421,16 +506,30 @@ int main() {
 
 	// 5. FILES
 
-	// output to file in TEXT FORMAT
+	// output TEXT FORMAT
 	// let's say we already have p3
 	ofstream fileOut("file_output_name.txt", ios::out);
 	fileOut << p3;
 
-	// input from file in TEXT FORMAT
+	// input TEXT FORMAT
 	Employee p6(10);
 	ifstream fileIn("file_name.txt", ios::in);
 	fileIn >> p6;
 	cout << p6;
+	
+	// BINARY !!!!!!!!!!!!!!TO DO!!!!!!!!!!!!
+
+
+	// 6.1 Inheritance
+	Manager m1();
+	Manager m3(1,2,"John",35,numberOfDiscounts,discounts);
+	cout << m3;
+
+	// 6.2 Inclusion
+
+	Employee employees[]{ p2,p3,m3 };
+	Boss b1(3,employees);
+	cout << b1;
 
 	return 0; 
 }
