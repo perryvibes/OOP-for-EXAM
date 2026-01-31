@@ -18,7 +18,7 @@ using namespace std;
 ...
 6. Inheritance and Inclusion (IS A and HAS A relationships) X
 ...
-7. Virtual Functions ?
+7. Virtual Functions X
 ...
 8. Abstract Classes X
 ...
@@ -99,8 +99,8 @@ public: // PUBLIC to everyone, can be accesed from everywhere. PROTECTED is used
 
 	// Why always :id(_id) and NOT this->id = _id?
 	/* 
-	Because id is a CONST variable and when you are doing : id(_id) it gets the value right when the OBJECT is created.
-	Instead when doing this->id = _id , the id is already initiated with '0' from class attributes and the program tries to assign the _id value to the const variable and THIS IS NOT POSSIBLE!	
+	Because id is a CONST variable and when you are doing : id(_id) it initialize and assignes the value right when the OBJECT is created.
+	Instead when doing this->id = _id , the id is already initiated and assigned with '0' from class attributes and the program tries to assign the _id value to the const variable and THIS IS NOT POSSIBLE!	
 	*/
 	Employee(int _id, string _name, int _age, int _nrDiscounts, float* _discounts):id(_id),name(_name),age(_age),nrDiscounts(_nrDiscounts) { // attributes are already assigned with _... values
 
@@ -351,6 +351,17 @@ public: // PUBLIC to everyone, can be accesed from everywhere. PROTECTED is used
 		}
 		return fin; // DON'T FORGET TO RETURN 'in'!
 	}
+	
+	// 7. Virtual Functions
+
+	// All you have to know:
+	// 1. Use pure virtual methods from Abstract class as soon as you put Abstract class in 'IS A' relationship with the class you want to use.
+	// ex: class Manager : public/protected Employee, public/protected Abstract
+	// 2. Use it in the base class (Employee) like virtual void function(){...}
+	// 3. After using in base class, you can use it in other derived classes like virtual void function() override {...} *google why override
+	// 4. Use virtual void function() final {...} when is the last time you use it 
+
+	virtual int Sum(int x, int y) { return x + y; }
 };
 
 // 6.1 Inheritance relationship (IS A relationship)
@@ -390,6 +401,9 @@ public:
 		out << (Employee)m << endl;
 		return out;
 	}
+
+	// 7. Virtual methods override
+	virtual int Sum(int x, int y) override { return (x + y) + 100; }
 };
 
 // 6.2 Inclusion relationship (HAS A relationship)
@@ -426,6 +440,8 @@ public:
 			this->employees = nullptr;
 		}
 	}
+	// 7. Virtual methods final
+	virtual int Sum(int x, int y) final { return (x + y) + (x*y); }
 };
 
 
@@ -435,16 +451,6 @@ int RandomCalculation (Employee& a) { // PROOF (3)
 	int number = a.age + a.nrDiscounts; // We accessed private attributes and used them.
 	return number;
 }
-
-// 7. Virtual Functions
-
-// All you have to know:
-// 1. Use pure virtual methods from Abstract class as soon as you put Abstract class in 'IS A' relationship with the class you want to use.
-// ex: class Manager : public/protected Employee, public/protected Abstract
-// 2. Use it in the base class (Employee) like virtual void function(){...}
-// 3. After using in base class, you can use it in other derived classes like virtual void function() override {...} *google why override
-// 4. Use virtual void function() final {...} when is the last time you use it 
-
 
 
 int main() { 
