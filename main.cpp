@@ -361,7 +361,7 @@ public: // PUBLIC to everyone, can be accesed from everywhere. PROTECTED is used
 	// 3. After using in base class, you can use it in other derived classes like virtual void function() override {...} *google why override
 	// 4. Use virtual void function() final {...} when is the last time you use it 
 
-	virtual int Sum(int x, int y) { return x + y; }
+	virtual int Divide(int x, int y) { return x / y; }
 };
 
 // 6.1 Inheritance relationship (IS A relationship)
@@ -403,7 +403,7 @@ public:
 	}
 
 	// 7. Virtual methods override
-	virtual int Sum(int x, int y) override { return (x + y) + 100; }
+	virtual int Divide(int x, int y) override { return (x / y) + 100; }
 };
 
 // 6.2 Inclusion relationship (HAS A relationship)
@@ -441,7 +441,7 @@ public:
 		}
 	}
 	// 7. Virtual methods final
-	virtual int Sum(int x, int y) final { return (x + y) + (x*y); }
+	virtual int Divide(int x, int y) final { return (x * y) / (x+y); }
 };
 
 
@@ -452,6 +452,26 @@ int RandomCalculation (Employee& a) { // PROOF (3)
 	return number;
 }
 
+// 9. Templates *generics
+
+// simple function
+template <typename T1, typename T2>
+T1 Multiply(T1 num1, T2 num2) {
+	return num1 * num2;
+} 
+
+// for classes
+template <typename T1>
+class Carte {
+	int nrPagini;
+	T1 pret;
+public:
+	Carte():nrPagini(0),pret(0){}
+	void afisare() {
+		cout << this->nrPagini << endl;
+		cout << this->pret << " dimensiunea (bytes)" << sizeof(this->pret) << endl;
+	}
+};
 
 int main() { 
 
@@ -479,10 +499,10 @@ int main() {
 	// 4. OPERATORS OVERLOADING
 
 	// istream + ostream
-	cout << p2 << endl;
+	/*cout << p2 << endl;
 	cin >> p2;
 	cout << endl;
-	cout << p2;
+	cout << p2;*/
 
 	// += for static and dinamic
 	cout << p3 << endl;
@@ -544,6 +564,27 @@ int main() {
 	Employee employees[]{ p2,p3,m3 };
 	Boss b1(3,employees);
 	cout << b1;
+
+	// 7. Virtual Functions
+	cout << b1.Divide(9, 3);
+	
+	// 8. Abstract Functions
+	cout << p5.Calculator();
+
+	// 9. Templates
+	
+	// function 
+	cout << Multiply(10, 45.12); // int '10' and a double '45.12') returns int
+	cout << Multiply(222222222222222222, 10); // long long + int returns long long
+	
+	// classes
+	// everytime you have to declare between <> the type of T1,T2 etc. when it comes to classes !!!
+
+	Carte<int> c1;
+	cout << "------------------TEMPLATE----------------" << endl;
+	c1.afisare();
+	Carte<double> c2;
+	c2.afisare();
 
 	return 0; 
 }
