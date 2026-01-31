@@ -462,14 +462,14 @@ T1 Multiply(T1 num1, T2 num2) {
 
 // for classes
 template <typename T1>
-class Carte {
-	int nrPagini;
-	T1 pret;
+class Book {
+	int pages;
+	T1 price;
 public:
-	Carte():nrPagini(0),pret(0){}
-	void afisare() {
-		cout << this->nrPagini << endl;
-		cout << this->pret << " dimensiunea (bytes)" << sizeof(this->pret) << endl;
+	Book():pages(0),price(0){}
+	void Display() {
+		cout << this->pages << endl;
+		cout << this->price << " size (bytes) " << sizeof(this->price) << endl;
 	}
 };
 
@@ -574,17 +574,17 @@ int main() {
 	// 9. Templates
 	
 	// function 
-	cout << Multiply(10, 45.12); // int '10' and a double '45.12') returns int
-	cout << Multiply(222222222222222222, 10); // long long + int returns long long
+	cout << Multiply(10, 45.12) << endl; // int '10' and a double '45.12') returns int
+	cout << Multiply(222222222222222222, 10) << endl; // long long + int returns long long
 	
 	// classes
 	// everytime you have to declare between <> the type of T1,T2 etc. when it comes to classes !!!
 
-	Carte<int> c1;
-	cout << "------------------TEMPLATE----------------" << endl;
-	c1.afisare();
-	Carte<double> c2;
-	c2.afisare();
+	Book<int> c1;
+	cout << "------------------TEMPLATES----------------" << endl;
+	c1.Display();
+	Book<double> c2;
+	c2.Display();
 
 	return 0; 
 }
