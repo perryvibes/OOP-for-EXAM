@@ -30,10 +30,24 @@ using namespace std;
 *////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+// 8. ABSTRACT CLASS *has to be declared before Employee that's why I added it here
+
+// A class only with pure virtual methods is called Abstract Class.
+// Pure Virtual Method is a virtual method assigned with 0 (ex: virtual int SumOfTwo() = 0)
+// Virtual Method != Pure Virtual Method !!
+
+class Abstract {
+public:
+	Abstract() {}
+	virtual void TVF() = 0;
+	virtual int Calculator() = 0;
+};
+
+
 // 1. CLASSES
 
 
-class Employee {
+class Employee:public Abstract {
 
 	// YOU CAN DECLARE PUBLIC, PRIVATE (DEFAULT) and PROTECTED(for IS A relationship)
 	
@@ -62,7 +76,12 @@ public: // PUBLIC to everyone, can be accesed from everywhere. PROTECTED is used
 	// CONSTRUCTORS (NOTE THAT I WILL ADD CONDITIONS ONLY WHERE IT MATTERS, checking name length and other is OPTIONAL to you)
 	
 	// Default
-	Employee(){}
+	Employee():Abstract(){}
+
+	// virtual methods for '8. Abstract Classes'
+	virtual void TVF() {}
+	virtual int Calculator() { return 0; }
+	// you have to use these otherwise you will get error while using *this in case you derived an Abstract class
 
 	// With ID only
 	Employee(int _id):id(_id){
@@ -426,17 +445,6 @@ int RandomCalculation (Employee& a) { // PROOF (3)
 // 3. After using in base class, you can use it in other derived classes like virtual void function() override {...} *google why override
 // 4. Use virtual void function() final {...} when is the last time you use it 
 
-// 8. ABSTRACT CLASS
-
-// A class only with pure virtual methods is called Abstract Class.
-// Pure Virtual Method is a virtual method assigned with 0 (ex: virtual int SumOfTwo() = 0)
-// Virtual Method != Pure Virtual Method !!
-
-class Abstract {
-protected:
-	virtual void TestingVirtualFunction() = 0;
-	virtual int Calculator() = 0;
-};
 
 
 int main() { 
