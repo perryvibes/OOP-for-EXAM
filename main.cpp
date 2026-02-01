@@ -1,6 +1,9 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <vector>
+#include <map>
+#include <algorithm>
 
 using namespace std;
 
@@ -22,7 +25,7 @@ using namespace std;
 ...
 8. Abstract Classes X
 ...
-9. Templates
+9. Templates X
 ...
 10. STL
 ...
@@ -473,6 +476,14 @@ public:
 	}
 };
 
+
+// 10. Function for sorting [STL]
+
+bool static Sorting(int x, int y) {
+	return x < y;
+}
+
+
 int main() { 
 
 	// 1. CLASSES
@@ -578,13 +589,96 @@ int main() {
 	cout << Multiply(222222222222222222, 10) << endl; // long long + int returns long long
 	
 	// classes
-	// everytime you have to declare between <> the type of T1,T2 etc. when it comes to classes !!!
+	// everytime you have to declare a data type between <> for T1,T2 etc.  !! when it comes to classes !!!
 
-	Book<int> c1;
 	cout << "------------------TEMPLATES----------------" << endl;
+	Book<int> c1;
 	c1.Display();
 	Book<double> c2;
 	c2.Display();
+
+	// 10. STL - Standard Template Library
+	// NOTE: don't forget to include the library you want to use! ex: (#include <vector>; #include <map> etc.)
+	
+	// 10.1 Sequence: Vector, List, Deque (* google for differences)
+
+	vector<int> v;
+	v.push_back(1); // adds element to the end // output v = [1]
+	v.push_back(2); // output v = [1,2]
+	v.pop_back(); // removes element from the end // output v = [1]
+
+	// same for List and Deque
+
+	// 10.2 Associative: Set, Map (* google for more info)
+
+	// key : value
+	map<int, string> books;
+	books.insert(pair<int, string>(1, "Book1"));
+	books.insert(pair<int, string>(3, "Book3"));
+
+	cout << books[1] << endl;;  // it will output "Book1" because we inserted 1 : Book1
+	cout << books[3] << endl; // Book3
+
+	// 10.3 Iteration
+	
+	// VECTOR ITERATION
+
+	// adding more elements to vector 'v'
+	v.push_back(4); v.push_back(5);
+
+	// Create an iterator for vector 'v'
+	// NOTE: you must create it with the same data type!
+
+	vector<int>::iterator it = v.begin();
+	while (it != v.end()) {
+		cout << *it << " ";
+		it++; // don't forget to add it!
+	}
+	cout << endl;
+	// OR
+	for (it = v.begin(); it != v.end(); it++) {
+		cout << *it << " ";
+	}
+	cout << endl;
+
+	// MAP ITERATION
+	// #include <map>
+
+	// adding more elements to books map
+	books.insert(pair<int, string>(4, "Book4"));
+	books.insert(pair<int, string>(5, "Book5"));
+	map <int, string>::iterator it_map = books.begin();
+	while (it_map != books.end()) {
+		cout << "Key: " << it_map->first << " "; // 'first' is for the key
+		cout << "Value: " << it_map->second << endl; // 'second' is the value
+		it_map++;
+	}
+
+	// Algorithms [copy(),sort(),find(),revert(),transform() etc.]
+	// #include <algorithm>
+
+	// create a new vector using 'v'
+	vector<int> v2(v.size());
+	
+	copy(v.begin(), v.end(), v2.begin()); // copy(start, end, destination) 
+	//NOTE: destination.begin()!!! not only destination in the last parameter
+
+	//sorting
+
+	v2.push_back(2);
+	v2.push_back(3);
+	
+	// 1, 4, 5, 2, 3
+
+	sort(v2.begin(), v2.end(), Sorting);
+
+	// 1, 2, 3, 4, 5
+	vector<int>::iterator it_sorted = v2.begin();
+	for (it_sorted = v2.begin(); it_sorted != v2.end(); it_sorted++) {
+		cout << *it_sorted << " ";
+	}
+
+
 
 	return 0; 
 }
