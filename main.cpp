@@ -677,8 +677,22 @@ int main() {
 	for (it_sorted = v2.begin(); it_sorted != v2.end(); it_sorted++) {
 		cout << *it_sorted << " ";
 	}
+	cout << endl;
 
+	// RTTI (Run-Time Type Indentification) 
 
+	Employee* e1 = new Manager();
+	cout << typeid(*e1).name() << endl; // type of e1 -> class Manager
+	
+	
+	e1->setName("Mihai");
+	Employee* manager = dynamic_cast<Manager*>(e1); // down-casting!!!! Employee->Manager
+	if (manager != NULL) {
+		cout << "Name of the manager: " << manager->getName() << endl;
+	}
+	else {
+		cout << "Manager doesn't exist!" << endl;
+	}
 
 	return 0; 
 }
