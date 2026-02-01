@@ -681,10 +681,13 @@ int main() {
 
 	// RTTI (Run-Time Type Indentification) 
 
+	// typeid()
+
 	Employee* e1 = new Manager();
 	cout << typeid(*e1).name() << endl; // type of e1 -> class Manager
 	
 	
+	// dynamic_cast<>
 	e1->setName("Mihai");
 	Employee* manager = dynamic_cast<Manager*>(e1); // down-casting!!!! Employee->Manager
 	if (manager != NULL) {
